@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+out_*.png
+out_*.jpg
+归档_*/
+阈值实验输出/
