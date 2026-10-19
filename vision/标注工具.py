@@ -15,7 +15,8 @@ v3 改了什么（v2 的毛病）：
     ③ 顺手兼容你以前的习惯：D = 下一张，A = 上一张。
 
 怎么用（双击同目录的「打开标注工具.cmd」）：
-    按 1 / 2 / 3 切类别：1=block 色块 · 2=cone 锥桶 · 3=doll 公仔（屏幕上会显示现在选的是哪个）
+    按 1 / 2 / 3 / 4 切类别：1=block 色块 · 2=cone 锥桶 · 3=doll 公仔 · 4=bottle 瓶子
+    （屏幕上会显示现在选的是哪个；4 是 2026-10-19 加的，家里没胶带卷不出锥，就单独给瓶子一类）
     鼠标左键按住，贴着物体边缘拖一个方框，松手即成框（立刻自动保存）
     D 或 N = 下一张 · A 或 P = 上一张 · U = 撤销上一个框 · C = 清空本张 · Q = 退出 · ← → 也能翻页
     输入法停在中文也没事：这个窗口一建好就把输入法从自己身上摘掉了。按键要是没反应，
@@ -38,8 +39,8 @@ from PIL import Image, ImageDraw, ImageFont, ImageOps
 HERE = os.path.dirname(os.path.abspath(__file__))
 IMG_DIR = os.path.join(HERE, "dataset", "images")
 LBL_DIR = os.path.join(HERE, "dataset", "labels")
-CLASSES = ["block", "cone", "doll"]                        # 0=色块 1=锥桶 2=公仔
-CN_NAMES = ["色块", "锥桶", "公仔"]
+CLASSES = ["block", "cone", "doll", "bottle"]                # 0=色块 1=锥桶 2=公仔 3=瓶子
+CN_NAMES = ["色块", "锥桶", "公仔", "瓶子"]
 FONT_PATH = r"C:\Windows\Fonts\msyh.ttc"                    # 微软雅黑
 BAR_H = 62                                                  # 顶部状态条高度
 WINDOW_EXTRA_H = 135                                        # 标题栏+边框（没有滑块了），实测 126，留余量
@@ -191,7 +192,7 @@ def render(disp, img_path, idx, total, cls_id, boxes, scale, hint=""):
         cv2.rectangle(body, p1, p2, (0, 255, 0), 2)
         body = put_cn(body, CN_NAMES[cls], (p1[0], max(0, p1[1] - 26)), (0, 255, 0))
     bar = np.zeros((BAR_H, body.shape[1], 3), dtype=np.uint8)
-    line1 = "现在选的是 【%d %s】   —— 按 1 色块 / 2 锥桶 / 3 公仔%s" % (
+    line1 = "现在选的是 【%d %s】   —— 按 1 色块 / 2 锥桶 / 3 公仔 / 4 瓶子%s" % (
         cls_id + 1, CN_NAMES[cls_id], hint)
     line2 = "第 %d/%d 张  %s     本张已框 %d 个     D 下一张 · A 上一张 · U 撤销 · C 清空 · Q 退出" % (
         idx + 1, total, os.path.basename(img_path), len(boxes))
@@ -278,7 +279,7 @@ def main():
             reload(st["idx"] + 1)
         elif k in (ord("q"), 27):
             break
-        elif k in (ord("1"), ord("2"), ord("3")):         # 数字键切类别，纯 Python 变量，不可能崩
+        elif k in (ord("1"), ord("2"), ord("3"), ord("4")):   # 数字键切类别，纯 Python 变量，不可能崩
             st["cls"] = k - ord("1")
             st["hint"] = ""
         elif k in (ord("d"), ord("n")):
